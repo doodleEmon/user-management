@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { User } from '@/types/user'
 import { useRouter } from 'next/navigation';
 import { HiArrowLongLeft, HiArrowLongRight } from 'react-icons/hi2'
+import LoadingSpinner from './loader';
 
 export default function UserDirectory() {
     const [inputValue, setInputValue] = useState("");
@@ -16,10 +17,16 @@ export default function UserDirectory() {
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await fetch('https://jsonplaceholder.typicode.com/users');
-            const data = await res.json();
-            data.length > 0 && setIsLoading(false);
-            setUsers(data);
+            setIsLoading(true);
+            try {
+                const res = await fetch('https://jsonplaceholder.typicode.com/users');
+                const data = await res.json();
+                setUsers(data);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            } finally {
+                setIsLoading(false); // Stop loading
+            }
         };
         fetchData();
     }, []);
@@ -73,7 +80,8 @@ export default function UserDirectory() {
                         onKeyDown={handleKeyDown}
                         className='border border-gray-300 focus:outline-blue-600 py-2 md:py-[10px] px-3 w-full rounded-lg'
                         placeholder='Search by name or email'
-                        required
+                        required={true}
+                        disabled={isLoading}
                     />
                     {
                         inputValue !== "" &&
@@ -86,7 +94,12 @@ export default function UserDirectory() {
                 <button
                     type='button'
                     onClick={handleSearch}
-                    className='bg-blue-600 hover:bg-blue-700 text-white text-lg w-full md:w-24 h-10 md:h-11 rounded-lg cursor-pointer'
+                    disabled={isLoading}
+                    className={`text-white text-lg w-full md:w-24 h-10 md:h-11 rounded-lg cursor-pointer ${
+                        isLoading 
+                            ? 'bg-gray-400 cursor-not-allowed' 
+                            : 'bg-blue-600 hover:bg-blue-700'
+                    }`}
                 >
                     Search
                 </button>
@@ -94,7 +107,9 @@ export default function UserDirectory() {
 
             {/* user table */}
             <div className="w-full mt-8 overflow-x-auto">
-                {currentPageUsers.length === 0 ? (
+                {isLoading ? (
+                    <LoadingSpinner />
+                ) : currentPageUsers.length === 0 ? (
                     <div className="max-w-full text-center text-lg font-medium">
                         No data found!
                     </div>
@@ -146,13 +161,29 @@ export default function UserDirectory() {
                 )}
             </div>
 
-            <div className='flex items-center justify-between gap-4 mt-5'>
-                <p className={`text-gray-600 ${filteredUsers.length === 0 ? 'invisible' : ''}`}>Showing <span className='font-medium'>{start}</span> to <span className='font-medium'>{end}</span> of <span className='font-medium'>{totalUsers}</span></p>
-                <div className={`flex items-center gap-2 ${filteredUsers.length < userPerPage + 1 ? 'invisible' : ''}`}>
-                    <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className={`${currentPage === 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-500 cursor-pointer'} text-white px-3 py-2 rounded-md text-lg `}><HiArrowLongLeft /></button>
-                    <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)} className={`${currentPage === totalPages ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-500 cursor-pointer'} text-white px-3 py-2 rounded-md text-lg `}><HiArrowLongRight /></button>
+            {!isLoading && (
+                <div className='flex items-center justify-between gap-4 mt-5'>
+                    <p className={`text-gray-600 ${filteredUsers.length === 0 ? 'invisible' : ''}`}>
+                        Showing <span className='font-medium'>{start}</span> to <span className='font-medium'>{end}</span> of <span className='font-medium'>{totalUsers}</span>
+                    </p>
+                    <div className={`flex items-center gap-2 ${filteredUsers.length < userPerPage + 1 ? 'invisible' : ''}`}>
+                        <button 
+                            disabled={currentPage === 1} 
+                            onClick={() => setCurrentPage(currentPage - 1)} 
+                            className={`${currentPage === 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-500 cursor-pointer'} text-white px-3 py-2 rounded-md text-lg`}
+                        >
+                            <HiArrowLongLeft />
+                        </button>
+                        <button 
+                            disabled={currentPage === totalPages} 
+                            onClick={() => setCurrentPage(currentPage + 1)} 
+                            className={`${currentPage === totalPages ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-500 cursor-pointer'} text-white px-3 py-2 rounded-md text-lg`}
+                        >
+                            <HiArrowLongRight />
+                        </button>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     )
 }
