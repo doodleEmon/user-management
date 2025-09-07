@@ -3,12 +3,15 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { User } from '@/types/user'
 import { useRouter } from 'next/navigation';
+import { HiArrowLongLeft, HiArrowLongRight } from 'react-icons/hi2'
 
 export default function UserDirectory() {
     const [inputValue, setInputValue] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const [users, setUsers] = useState<User[]>([]);
+    const [currentPage, setCurrentPage] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
+
     const router = useRouter();
 
     useEffect(() => {
@@ -26,19 +29,30 @@ export default function UserDirectory() {
 
         return users.filter((user: User) =>
             user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.username.toLowerCase().includes(searchQuery.toLowerCase())
+            user.email.toLowerCase().includes(searchQuery.toLowerCase())
         )
     }, [users, searchQuery]);
+
+    // pagination //
+    const userPerPage = 5;
+    const lastUserIndex = currentPage * userPerPage;
+    const firstUserIndex = lastUserIndex - userPerPage;
+    const currentPageUsers = filteredUsers.slice(firstUserIndex, lastUserIndex);
+    const totalUsers = filteredUsers.length;
+    const totalPages = Math.ceil(filteredUsers.length / userPerPage);
+    const start = totalUsers === 0 ? 0 : firstUserIndex + 1;
+    const end = totalUsers === 0 ? 0 : Math.min(lastUserIndex, totalUsers);
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
             setSearchQuery(inputValue.trim());
+            setCurrentPage(1);
         }
     };
 
     const handleSearch = () => {
         setSearchQuery(inputValue.trim());
+        setCurrentPage(1);
     };
 
     useEffect(() => {
@@ -80,7 +94,7 @@ export default function UserDirectory() {
 
             {/* user table */}
             {
-                filteredUsers.length === 0 ? (<div className='max-w-full mt-8 text-center text-lg font-medium'>No data found!</div>) : (<table className='w-full mt-8'>
+                currentPageUsers.length === 0 ? (<div className='max-w-full mt-8 text-center text-lg font-medium'>No data found!</div>) : (<table className='w-full mt-8'>
                     <thead className='overflow-hidden overflow-x-auto'>
                         <tr className='bg-gray-100'>
                             <th className='text-start px-5 py-2 font-normal text-gray-600 uppercase text-sm'>Name</th>
@@ -90,11 +104,11 @@ export default function UserDirectory() {
                         </tr>
                     </thead>
                     <tbody className='overflow-hidden overflow-x-auto'>
-                        {filteredUsers.map((user: User, index: number) => (
+                        {currentPageUsers.map((user: User, index: number) => (
                             <tr
-                            onClick={() => router.push(`/users/${user.id}`)}
+                                onClick={() => router.push(`/users/${user.id}`)}
                                 key={index}
-                                className={`hover:bg-gray-100 cursor-pointer ${index !== filteredUsers.length - 1 ? 'border-b border-b-gray-200' : ''}`}
+                                className={`hover:bg-gray-100 cursor-pointer ${index !== currentPageUsers.length - 1 ? 'border-b border-b-gray-200' : ''}`}
                             >
                                 <td className='text-start px-5 py-3.5 font-normal text-[14.5px] text-gray-800'>
                                     <p>{user.name}</p>
@@ -108,6 +122,13 @@ export default function UserDirectory() {
                     </tbody>
                 </table>)
             }
+            <div className='flex items-center justify-between gap-4 mt-5'>
+                <p className={`text-gray-600 ${filteredUsers.length === 0 ? 'invisible' : ''}`}>Showing <span className='font-medium'>{start}</span> to <span className='font-medium'>{end}</span> of <span className='font-medium'>{totalUsers}</span></p>
+                <div className={`flex items-center gap-2 ${filteredUsers.length < userPerPage + 1 ? 'invisible' : ''}`}>
+                    <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className={`${currentPage === 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-500 cursor-pointer'} text-white px-3 py-2 rounded-md text-lg `}><HiArrowLongLeft /></button>
+                    <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)} className={`${currentPage === totalPages ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-500 cursor-pointer'} text-white px-3 py-2 rounded-md text-lg `}><HiArrowLongRight /></button>
+                </div>
+            </div>
         </div>
     )
 }
