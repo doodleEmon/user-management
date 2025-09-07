@@ -12,7 +12,6 @@ export default function UserDirectory() {
     const [users, setUsers] = useState<User[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
-    const [searchingLoader, setSearchingLoader] = useState(true);
 
     const router = useRouter();
 
@@ -26,7 +25,7 @@ export default function UserDirectory() {
             } catch (error) {
                 console.error('Error fetching users:', error);
             } finally {
-                setIsLoading(false); // Stop loading
+                setIsLoading(false);
             }
         };
         fetchData();
