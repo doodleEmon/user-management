@@ -34,7 +34,7 @@ export default function UserDirectory() {
     }, [users, searchQuery]);
 
     // pagination //
-    const userPerPage = 5;
+    const userPerPage = 10;
     const lastUserIndex = currentPage * userPerPage;
     const firstUserIndex = lastUserIndex - userPerPage;
     const currentPageUsers = filteredUsers.slice(firstUserIndex, lastUserIndex);
