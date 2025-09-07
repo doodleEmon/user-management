@@ -2,12 +2,14 @@
 
 import React, { useEffect, useMemo, useState } from 'react'
 import { User } from '@/types/user'
+import { useRouter } from 'next/navigation';
 
 export default function UserDirectory() {
     const [inputValue, setInputValue] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const [users, setUsers] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const router = useRouter();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -70,7 +72,7 @@ export default function UserDirectory() {
                 <button
                     type='button'
                     onClick={handleSearch}
-                    className='p-2 bg-blue-600 hover:bg-blue-700 text-white text-lg px-6 rounded-lg cursor-pointer'
+                    className='bg-blue-600 hover:bg-blue-700 text-white text-lg px-6 py-2 rounded-lg cursor-pointer'
                 >
                     Search
                 </button>
@@ -90,6 +92,7 @@ export default function UserDirectory() {
                     <tbody>
                         {filteredUsers.map((user: User, index: number) => (
                             <tr
+                            onClick={() => router.push(`/users/${user.id}`)}
                                 key={index}
                                 className={`hover:bg-gray-100 cursor-pointer ${index !== filteredUsers.length - 1 ? 'border-b border-b-gray-200' : ''}`}
                             >
