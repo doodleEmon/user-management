@@ -93,35 +93,59 @@ export default function UserDirectory() {
             </div>
 
             {/* user table */}
-            {
-                currentPageUsers.length === 0 ? (<div className='max-w-full mt-8 text-center text-lg font-medium'>No data found!</div>) : (<table className='w-full mt-8'>
-                    <thead className='overflow-hidden overflow-x-auto'>
-                        <tr className='bg-gray-100'>
-                            <th className='text-start px-5 py-2 font-normal text-gray-600 uppercase text-sm'>Name</th>
-                            <th className='text-start px-5 py-2 font-normal text-gray-600 uppercase text-sm'>Email</th>
-                            <th className='text-start px-5 py-2 font-normal text-gray-600 uppercase text-sm'>Phone</th>
-                            <th className='text-start px-5 py-2 font-normal text-gray-600 uppercase text-sm'>Company</th>
-                        </tr>
-                    </thead>
-                    <tbody className='overflow-hidden overflow-x-auto'>
-                        {currentPageUsers.map((user: User, index: number) => (
-                            <tr
-                                onClick={() => router.push(`/users/${user.id}`)}
-                                key={index}
-                                className={`hover:bg-gray-100 cursor-pointer ${index !== currentPageUsers.length - 1 ? 'border-b border-b-gray-200' : ''}`}
-                            >
-                                <td className='text-start px-5 py-3.5 font-normal text-[14.5px] text-gray-800'>
-                                    <p>{user.name}</p>
-                                    <p className='text-gray-600'>@{user.username}</p>
-                                </td>
-                                <td className='text-start px-5 py-3.5 font-normal text-[14.5px] text-gray-800'>{user.email}</td>
-                                <td className='text-start px-5 py-3.5 font-normal text-[14.5px] text-gray-800'>{user.phone}</td>
-                                <td className='text-start px-5 py-3.5 font-normal text-[14.5px] text-gray-800'>{user.company.name}</td>
+            <div className="w-full mt-8 overflow-x-auto">
+                {currentPageUsers.length === 0 ? (
+                    <div className="max-w-full text-center text-lg font-medium">
+                        No data found!
+                    </div>
+                ) : (
+                    <table className="min-w-full border-collapse">
+                        <thead>
+                            <tr className="bg-gray-100">
+                                <th className="text-start px-5 py-2 font-normal text-gray-600 uppercase text-sm whitespace-nowrap">
+                                    Name
+                                </th>
+                                <th className="text-start px-5 py-2 font-normal text-gray-600 uppercase text-sm whitespace-nowrap">
+                                    Email
+                                </th>
+                                <th className="text-start px-5 py-2 font-normal text-gray-600 uppercase text-sm whitespace-nowrap">
+                                    Phone
+                                </th>
+                                <th className="text-start px-5 py-2 font-normal text-gray-600 uppercase text-sm whitespace-nowrap">
+                                    Company
+                                </th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>)
-            }
+                        </thead>
+                        <tbody>
+                            {currentPageUsers.map((user: User, index: number) => (
+                                <tr
+                                    key={index}
+                                    onClick={() => router.push(`/users/${user.id}`)}
+                                    className={`hover:bg-gray-100 cursor-pointer ${index !== currentPageUsers.length - 1
+                                            ? "border-b border-b-gray-200"
+                                            : ""
+                                        }`}
+                                >
+                                    <td className="text-start px-5 py-3.5 font-normal text-[14.5px] text-gray-800 whitespace-nowrap">
+                                        <p>{user.name}</p>
+                                        <p className="text-gray-600">@{user.username}</p>
+                                    </td>
+                                    <td className="text-start px-5 py-3.5 font-normal text-[14.5px] text-gray-800 whitespace-nowrap">
+                                        {user.email}
+                                    </td>
+                                    <td className="text-start px-5 py-3.5 font-normal text-[14.5px] text-gray-800 whitespace-nowrap">
+                                        {user.phone}
+                                    </td>
+                                    <td className="text-start px-5 py-3.5 font-normal text-[14.5px] text-gray-800 whitespace-nowrap">
+                                        {user.company.name}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+            </div>
+
             <div className='flex items-center justify-between gap-4 mt-5'>
                 <p className={`text-gray-600 ${filteredUsers.length === 0 ? 'invisible' : ''}`}>Showing <span className='font-medium'>{start}</span> to <span className='font-medium'>{end}</span> of <span className='font-medium'>{totalUsers}</span></p>
                 <div className={`flex items-center gap-2 ${filteredUsers.length < userPerPage + 1 ? 'invisible' : ''}`}>
