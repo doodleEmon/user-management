@@ -12,6 +12,7 @@ export default function UserDirectory() {
     const [users, setUsers] = useState<User[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
+    const [searchingLoader, setSearchingLoader] = useState(true);
 
     const router = useRouter();
 
@@ -58,7 +59,9 @@ export default function UserDirectory() {
     };
 
     const handleSearch = () => {
+        setIsLoading(true);
         setSearchQuery(inputValue.trim());
+        setIsLoading(false);
         setCurrentPage(1);
     };
 
@@ -95,13 +98,9 @@ export default function UserDirectory() {
                     type='button'
                     onClick={handleSearch}
                     disabled={isLoading}
-                    className={`text-white text-lg w-full md:w-24 h-10 md:h-11 rounded-lg cursor-pointer ${
-                        isLoading 
-                            ? 'bg-gray-400 cursor-not-allowed' 
-                            : 'bg-blue-600 hover:bg-blue-700'
-                    }`}
+                    className={`text-white text-base w-full ${isLoading ? 'md:w-28' : 'md:w-24'} h-10 md:h-11 rounded-lg cursor-pointer bg-blue-600 hover:bg-blue-700`}
                 >
-                    Search
+                    {isLoading ? 'Searching...' : 'Search'}
                 </button>
             </div>
 
