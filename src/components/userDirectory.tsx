@@ -7,12 +7,14 @@ export default function UserDirectory() {
     const [inputValue, setInputValue] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const [users, setUsers] = useState<User[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
-            const data = await fetch('https://jsonplaceholder.typicode.com/users');
-            const users = await data.json();
-            setUsers(users);
+            const res = await fetch('https://jsonplaceholder.typicode.com/users');
+            const data = await res.json();
+            data.length > 0 && setIsLoading(false);
+            setUsers(data);
         };
         fetchData();
     }, []);
@@ -27,17 +29,21 @@ export default function UserDirectory() {
         )
     }, [users, searchQuery]);
 
-    // Handle Enter press
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
             setSearchQuery(inputValue.trim());
         }
     };
 
-    // Handle Search button
     const handleSearch = () => {
         setSearchQuery(inputValue.trim());
     };
+
+    useEffect(() => {
+        if (inputValue === "") {
+            setSearchQuery("");
+        }
+    }, [inputValue]);
 
     return (
         <div className='mt-7'>
@@ -51,6 +57,7 @@ export default function UserDirectory() {
                         onKeyDown={handleKeyDown}
                         className='border border-gray-300 focus:outline-blue-600 py-[10px] px-3 w-full rounded-lg'
                         placeholder='Search by name or email'
+                        required
                     />
                     {
                         inputValue !== "" &&
