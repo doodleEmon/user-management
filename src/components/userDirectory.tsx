@@ -50,14 +50,14 @@ export default function UserDirectory() {
     return (
         <div className='mt-7'>
             {/* search bar */}
-            <div className='flex items-center gap-4'>
-                <div className='flex-1 relative'>
+            <div className='flex flex-col md:flex-row items-center gap-4'>
+                <div className='w-full md:flex-1 relative'>
                     <input
                         type="text"
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        className='border border-gray-300 focus:outline-blue-600 py-[10px] px-3 w-full rounded-lg'
+                        className='border border-gray-300 focus:outline-blue-600 py-2 md:py-[10px] px-3 w-full rounded-lg'
                         placeholder='Search by name or email'
                         required
                     />
@@ -72,7 +72,7 @@ export default function UserDirectory() {
                 <button
                     type='button'
                     onClick={handleSearch}
-                    className='bg-blue-600 hover:bg-blue-700 text-white text-lg px-6 py-2 rounded-lg cursor-pointer'
+                    className='bg-blue-600 hover:bg-blue-700 text-white text-lg w-full md:w-24 h-10 md:h-11 rounded-lg cursor-pointer'
                 >
                     Search
                 </button>
@@ -80,8 +80,8 @@ export default function UserDirectory() {
 
             {/* user table */}
             {
-                filteredUsers.length === 0 ? (<div className='w-full mt-8 text-center text-lg font-medium'>No data found!</div>) : (<table className='w-full mt-8'>
-                    <thead>
+                filteredUsers.length === 0 ? (<div className='max-w-full mt-8 text-center text-lg font-medium'>No data found!</div>) : (<table className='w-full mt-8'>
+                    <thead className='overflow-hidden overflow-x-auto'>
                         <tr className='bg-gray-100'>
                             <th className='text-start px-5 py-2 font-normal text-gray-600 uppercase text-sm'>Name</th>
                             <th className='text-start px-5 py-2 font-normal text-gray-600 uppercase text-sm'>Email</th>
@@ -89,7 +89,7 @@ export default function UserDirectory() {
                             <th className='text-start px-5 py-2 font-normal text-gray-600 uppercase text-sm'>Company</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className='overflow-hidden overflow-x-auto'>
                         {filteredUsers.map((user: User, index: number) => (
                             <tr
                             onClick={() => router.push(`/users/${user.id}`)}
