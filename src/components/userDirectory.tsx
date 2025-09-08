@@ -133,13 +133,19 @@ export default function UserDirectory() {
                     type='button'
                     onClick={handleSearch}
                     disabled={isLoading}
-                    className={`text-white text-base w-full ${isLoading ? 'md:w-28' : 'md:w-24'} h-10 md:h-11 rounded-lg transition-all duration-200 ${isLoading
+                    className={`text-white text-base w-full ${isLoading ? 'md:w-28' : 'md:w-24'} h-10 md:h-11 rounded-lg relative overflow-hidden ${isLoading
                         ? 'bg-gray-400 cursor-not-allowed'
-                        : 'bg-blue-600 hover:bg-blue-700 cursor-pointer'
+                        : 'bg-blue-600 cursor-pointer group'
                         }`}
                     whileTap={{ scale: 0.9, rotate: 3 }}
                 >
-                    {isLoading ? 'Searching...' : 'Search'}
+                    {!isLoading && (
+                        <div className="absolute inset-0 bg-blue-400 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></div>
+                    )}
+
+                    <span className="relative z-10">
+                        {isLoading ? 'Searching...' : 'Search'}
+                    </span>
                 </motion.button>
             </div>
 
@@ -171,51 +177,96 @@ export default function UserDirectory() {
                         <motion.table
                             key="table"
                             className="min-w-full border-collapse"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.15 }}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{
+                                duration: 0.4,
+                                ease: [0.4, 0.0, 0.2, 1] // Custom easing for smoother animation
+                            }}
                         >
                             <thead>
-                                <tr className="bg-gray-100">
-                                    <th className="text-start px-5 py-2 font-normal text-gray-600 uppercase text-sm whitespace-nowrap">
-                                        Name
-                                    </th>
-                                    <th className="text-start px-5 py-2 font-normal text-gray-600 uppercase text-sm whitespace-nowrap">
-                                        Email
-                                    </th>
-                                    <th className="text-start px-5 py-2 font-normal text-gray-600 uppercase text-sm whitespace-nowrap">
-                                        Phone
-                                    </th>
-                                    <th className="text-start px-5 py-2 font-normal text-gray-600 uppercase text-sm whitespace-nowrap">
-                                        Company
-                                    </th>
-                                </tr>
+                                <motion.tr
+                                    className="bg-gray-100"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ delay: 0.1, duration: 0.3 }}
+                                >
+                                    {['Name', 'Email', 'Phone', 'Company'].map((header, index) => (
+                                        <motion.th
+                                            key={header}
+                                            className="text-start px-5 py-2 font-normal text-gray-600 uppercase text-sm whitespace-nowrap"
+                                            initial={{ opacity: 0, y: -10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{
+                                                delay: 0.2 + (index * 0.1),
+                                                duration: 0.3
+                                            }}
+                                        >
+                                            {header}
+                                        </motion.th>
+                                    ))}
+                                </motion.tr>
                             </thead>
                             <tbody>
                                 {currentPageUsers.map((user: User, index: number) => (
-                                    <tr
+                                    <motion.tr
                                         key={user.id}
                                         onClick={() => router.push(`/users/${user.id}`)}
-                                        className={`hover:bg-gray-50 cursor-pointer transition-colors duration-150 ${index !== currentPageUsers.length - 1
+                                        className={`hover:bg-blue-100 group cursor-pointer transition-all duration-200 ${index !== currentPageUsers.length - 1
                                             ? "border-b border-b-gray-200"
                                             : ""
                                             }`}
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{
+                                            delay: 0.3 + (index * 0.1),
+                                            duration: 0.4,
+                                            ease: [0.4, 0.0, 0.2, 1]
+                                        }}
+                                        whileHover={{
+                                            scale: 1.01,
+                                            transition: { duration: 0.2 }
+                                        }}
+                                        whileTap={{ scale: 0.99 }}
                                     >
-                                        <td className="text-start px-5 py-3.5 font-normal text-[14.5px] text-gray-800 whitespace-nowrap">
-                                            <p>{user.name}</p>
-                                            <p className="text-gray-600">@{user.username}</p>
-                                        </td>
-                                        <td className="text-start px-5 py-3.5 font-normal text-[14.5px] text-gray-800 whitespace-nowrap">
+                                        <motion.td
+                                            className="text-start px-5 py-3.5 font-normal text-[14.5px] text-gray-800 group-hover:text-blue-500 whitespace-nowrap"
+                                            whileHover={{ x: 2 }}
+                                            transition={{ duration: 0.15 }}
+                                        >
+                                            <motion.p
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                transition={{ delay: 0.4 + (index * 0.1) }}
+                                            >
+                                                {user.name}
+                                            </motion.p>
+                                            <motion.p
+                                                className="text-gray-600"
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                transition={{ delay: 0.5 + (index * 0.1) }}
+                                            >
+                                                @{user.username}
+                                            </motion.p>
+                                        </motion.td>
+                                        <motion.td
+                                            className="text-start px-5 py-3.5 font-normal text-[14.5px] text-gray-800 group-hover:text-blue-500 whitespace-nowrap"
+                                        >
                                             {user.email}
-                                        </td>
-                                        <td className="text-start px-5 py-3.5 font-normal text-[14.5px] text-gray-800 whitespace-nowrap">
+                                        </motion.td>
+                                        <motion.td
+                                            className="text-start px-5 py-3.5 font-normal text-[14.5px] text-gray-800 group-hover:text-blue-500 whitespace-nowrap"
+                                        >
                                             {user.phone}
-                                        </td>
-                                        <td className="text-start px-5 py-3.5 font-normal text-[14.5px] text-gray-800 whitespace-nowrap">
+                                        </motion.td>
+                                        <motion.td
+                                            className="text-start px-5 py-3.5 font-normal text-[14.5px] text-gray-800 group-hover:text-blue-500 whitespace-nowrap"
+                                        >
                                             {user.company.name}
-                                        </td>
-                                    </tr>
+                                        </motion.td>
+                                    </motion.tr>
                                 ))}
                             </tbody>
                         </motion.table>
